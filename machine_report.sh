@@ -12,7 +12,7 @@ MAX_DATA_LEN=32
 BORDERS_AND_PADDING=7
 
 # Basic configuration, change as needed
-report_title="UNITED STATES GRAPHICS COMPANY"
+report_title="FUAD MUHTASIM"
 last_login_ip_present=0
 zfs_present=0
 zfs_filesystem="zroot/ROOT/os"
@@ -296,10 +296,17 @@ else
     root_total_gb=$(awk -v total="$root_total" 'BEGIN { printf "%.2f", total / 1024 }')
     root_used_gb=$(awk -v used="$root_used" 'BEGIN { printf "%.2f", used / 1024 }')
     disk_percent=$(awk -v used="$root_used" -v total="$root_total" 'BEGIN { printf "%.2f", (used / total) * 100 }')
+    fs_type=$(df -T "$root_partition" | awk 'NR==2 {print $2}')
 fi
 
 # Last login and Uptime
-last_login=$(lastlog -u "$USER")
+session_start=$(ps -p $$ -o lstart=)
+if [ -n "$session_start" ]; then
+    last_login_time=$(date -d "$session_start" "+%b %d %H:%M")
+else
+    last_login_time="Current Session"
+fi
+last_login_ip_present=0
 last_login_ip=$(echo "$last_login" | awk 'NR==2 {print $3}')
 
 # Check if last_login_ip is an IP address
@@ -337,7 +344,9 @@ PRINT_HEADER
 PRINT_CENTERED_DATA "$report_title"
 PRINT_CENTERED_DATA "TR-100 MACHINE REPORT"
 PRINT_DIVIDER "top"
-PRINT_DATA "OS" "$os_name"
+# PRINT_DATA "OS" "$os_name"
+os_name_truncated=$(echo "$os_name" | cut -c 1-$((CURRENT_LEN-3)))...
+printf "│ %-${MAX_NAME_LEN}s │ %-${CURRENT_LEN}s │\n" "OS" "$os_name_truncated"
 PRINT_DATA "KERNEL" "$os_kernel"
 PRINT_DIVIDER
 PRINT_DATA "HOSTNAME" "$net_hostname"
@@ -354,9 +363,9 @@ PRINT_DATA "PROCESSOR" "$cpu_model"
 PRINT_DATA "CORES" "$cpu_cores_per_socket vCPU(s) / $cpu_sockets Socket(s)"
 PRINT_DATA "HYPERVISOR" "$cpu_hypervisor"
 PRINT_DATA "CPU FREQ" "$cpu_freq GHz"
-PRINT_DATA "LOAD  1m" "$cpu_1min_bar_graph"
-PRINT_DATA "LOAD  5m" "$cpu_5min_bar_graph"
-PRINT_DATA "LOAD 15m" "$cpu_15min_bar_graph"
+printf "│ %-${MAX_NAME_LEN}s │ %-${CURRENT_LEN}s │\n" "LOAD  1m" "$cpu_1min_bar_graph"
+printf "│ %-${MAX_NAME_LEN}s │ %-${CURRENT_LEN}s │\n" "LOAD  5m" "$cpu_5min_bar_graph"
+printf "│ %-${MAX_NAME_LEN}s │ %-${CURRENT_LEN}s │\n" "LOAD 15m" "$cpu_15min_bar_graph"
 
 if [ $zfs_present -eq 1 ]; then
     PRINT_DIVIDER
@@ -365,13 +374,15 @@ if [ $zfs_present -eq 1 ]; then
     PRINT_DATA "ZFS HEALTH" "$zfs_health"
 else
     PRINT_DIVIDER
-    PRINT_DATA "VOLUME" "$root_used_gb/$root_total_gb GB [$disk_percent%]"
-    PRINT_DATA "DISK USAGE" "$disk_bar_graph"
+    PRINT_DATA "VOLUME" "$root_used_gb/$root_total_gb GB [$disk_percent%] ($fs_type)"
+    # PRINT_DATA "DISK USAGE" "$disk_bar_graph"
+    printf "│ %-${MAX_NAME_LEN}s │ %-${CURRENT_LEN}s │\n" "DISK USAGE" "$disk_bar_graph"
 fi
 
 PRINT_DIVIDER
 PRINT_DATA "MEMORY" "${mem_used_gb}/${mem_total_gb} GiB [${mem_percent}%]"
-PRINT_DATA "USAGE" "${mem_bar_graph}"
+# PRINT_DATA "USAGE" "${mem_bar_graph}"
+printf "│ %-${MAX_NAME_LEN}s │ %-${CURRENT_LEN}s │\n" "USAGE" "${mem_bar_graph}"
 PRINT_DIVIDER
 PRINT_DATA "LAST LOGIN" "$last_login_time"
 
