@@ -3,7 +3,21 @@ SKU: TR-100, filed under Technical Reports (TR).
 
 A machine information used at [United States Graphics Company](https://x.com/usgraphics)
 
+## Previews 
+
+<img src="https://github.com/user-attachments/assets/388f1d65-579a-4674-8df8-9c1ac9efd2b9" width="500" />
+
+---
+
+<img src="https://github.com/user-attachments/assets/6c397bea-60da-4193-8543-c1767445c28a" width="500" />
+
+
+## Original Preview 
+
 <img src="https://github.com/usgraphics/TR-100/assets/8161031/2a8412dd-09de-45ff-8dfb-e5c6b6f19212" width="500" />
+
+
+
 
 ‼️*** WARNING ***‼️
 
